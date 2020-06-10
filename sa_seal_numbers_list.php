@@ -13,7 +13,7 @@ if ($permission['view']) { ?>
     if ($delete['id']) {
     }
 
-    $Limit = 50;
+    $Limit = DEFAULT_LIMIT;
     $qry = "select a.* from " . $table . " a where 1 ";
     if ($swords) {
         $qry .= "and 1 ";
@@ -56,6 +56,11 @@ if ($permission['view']) { ?>
                         <div class="ks-page-content-body">
                             <div class="ks-dashboard-tabbed-sidebar">
                                 <div class="ks-dashboard-tabbed-sidebar-widgets">                 
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <a href="<?php echo URL_BASEADMIN . $editpagename; ?>" class="btn btn-success btn-sm float-right" title="Add">Add</a>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="card ks-card-widget ks-widget-table">

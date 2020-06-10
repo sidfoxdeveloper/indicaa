@@ -1083,7 +1083,7 @@ function isCompanyIdValid($value) {
  */
 function isUserIdValid($value) {
     if ( !isEmpty($value) ) {
-            $result = fetchqry(' `user`.`id` ', TB_USER, array( 'id='=>$value, 'status=' => "active" ) );
+            $result = fetchqry(' `id` ', TB_USERS, array('id='=>$value, 'status!='=>"blocked") );
             if( !isEmpty($result['id']) ){
                 return $result['id'];
             } else {
@@ -1093,7 +1093,23 @@ function isUserIdValid($value) {
         return FALSE;
     }
 }
-
+/**
+ * @isDeviceIdValid = function to device token is valid or not
+ * @value = value to be device token*
+ * @returns = Returns token if token found ELSE false
+ */
+function isDeviceIdValid($value) {
+    if ( !isEmpty($value) ) {
+            $result = fetchqry('`token`', TB_USERS, array( '`token`='=>$value, 'users_groups_id='=>'6' ) );
+            if( !isEmpty($result['token']) ) {
+                return $result['token'];
+            } else {
+                return FALSE;
+            }
+    } else {
+        return FALSE;
+    }
+}
 /**
  * @isSessionUserIdValid = function to user id is valid or not
  * @value = value to be TRUE
@@ -1406,6 +1422,34 @@ function getAgoDateDifference($cDate) {
         
     } else {
         return 0;
+    }
+    
+}
+
+function getDateDifference($first_date, $last_date) {
+    
+    if( !isEmpty($first_date) && !isEmpty($last_date) ) {
+            
+            $created_at = "";
+            $first_date = strtotime($first_date); // or your date as well
+            $last_date = strtotime($last_date);
+
+            $datediff = $last_date - $first_date;
+            
+            $hours = round( $datediff / (60 * 60 ) );
+            $days = round( $datediff / (60 * 60 * 24 ) );
+            $month = round( $datediff / (60 * 60 * 24 * 30) );
+            $year = round( $datediff / (60 * 60 * 24 * 30 * 12) );
+
+            if($days > 0){
+                return $days;
+            }
+            else{ 
+                return FALSE;
+            }
+ 
+    } else {
+        return FALSE;
     }
     
 }

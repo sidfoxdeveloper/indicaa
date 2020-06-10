@@ -43,7 +43,7 @@ function updateqry($arr, $condition, $tblnm, $return="")
 			$qry.=" and ".$condition; 
 		endif;
 	}
-                    
+        
 	if($return=='1')
 		return $qry;
 	else
@@ -87,8 +87,7 @@ function fetchqry($getitem, $tblnm, $arr="1", $orderby="", $extra="", $return=""
 	}
 	if($orderby!="")
 		$qry.=" order by ".$orderby;
-	
-                    $qry.=" ".$extra;
+                $qry.=" ".$extra;
                     
 	if($return=='1')
 		return $qry;

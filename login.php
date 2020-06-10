@@ -11,7 +11,7 @@
 		if($loginUser)
 		{
 			$loginresult = $loginUser->checkAuthantication();
-                        
+                       
 			if($loginresult == 1) {
                             
 				header("Location:sa_home.php");                                
@@ -26,7 +26,7 @@
                                 
                         } elseif($loginresult == 4) {
                             
-                                header("Location:ea_home.php");
+                                header("Location:emo_home.php");
                                 
                         } elseif($loginresult == 5) {    
                             

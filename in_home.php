@@ -30,7 +30,7 @@
                         <div class="ks-dashboard-tabbed-sidebar">
                             <!-- START: ks-dashboard-tabbed -->    
                             <div class="ks-dashboard-tabbed-sidebar-widgets">
-                                
+                                <center><h3>Only Mobile Application</h3></center>
                             </div>
                             <!-- END: ks-dashboard-tabbed -->
                         </div>

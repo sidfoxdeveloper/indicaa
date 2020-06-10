@@ -1,0 +1,1 @@
+[24-Apr-2020 10:11:16 Etc/GMT] PHP Deprecated:  Methods with the same name as their class will not be constructors in a future version of PHP; Connect has a deprecated constructor in /home/jhkinfotech/public_html/indicaa/classes/configure.php on line 6

@@ -14,12 +14,15 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
         
         $pagetype = "Edit";
         $data = fetchqry("*", $table, array("id=" => $_REQUEST['id']));
+
+        $country_id = $data['country_id'];
         $seal_number = $data['seal_number'];
         $created_at = date( 'd F, Y', strtotime($data['created_at']) );        
         
     } else {
         
-        $seal_number = $_REQUEST['seal_number'];        
+        $country_id = $_REQUEST['country_id'];
+        $seal_number = $_REQUEST['seal_number'];
         
     }
     if (strpos($_SERVER['REQUEST_URI'], "?true") != 0) {
@@ -67,14 +70,64 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                                                         <div>  
 
                                                             <div class="form-group row">
-                                                                <label for="seal_number" class="col-sm-2 form-control-label">Seal Number</label>
+                                                                <label for="country_id" class="col-sm-2 form-control-label">Select Country</label>
                                                                 <div class="col-sm-10">
-                                                                    <div class="input-group">                         
-                                                                        <input type="text" name="seal_number" id="seal_number" class="form-control" value="<?php echo $seal_number; ?>" > 
+                                                                    <div class="input-group">
+                                                                        <select name="country_id" id="country_id" class="form-control">
+                                                                            <option value="">Country</option>
+                                                                            <?php
+                                                                            $sel_contries = selectqry('*', TB_COUNTRIES);
+                                                                            $selected = "";
+                                                                            while ($rowc = mysqli_fetch_assoc($sel_contries)):
+                                                                                if( $rowc['id'] == $country_id ):
+                                                                                    echo '<option value="'.$rowc['id'].'" selected >'.$rowc['name'].'</option>';
+                                                                                else:
+                                                                                    echo '<option value="'.$rowc['id'].'">'.$rowc['name'].'</option>';
+                                                                                endif;
+                                                                            endwhile;
+                                                                            ?>
+                                                                        </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
+                                                            <br>
+                                                            <div id="label_top_div">
+                                                                <?php
+                                                                $sn = explode(',', $seal_number);
+                                                                $i = 1;
+                                                                $tot_count = 1;
+                                                                if( count($sn) > 1 ){
+                                                                    $tot_count = count($sn);
+                                                                }
+                                                                foreach($sn as $tmp) :  ?>
+                                                                    <div class="form-group row" id="seal_number_div_<?php echo $i;?>" >
+                                                                        <label class="col-sm-2 form-control-label">Label <?php echo $i;?></label>
+                                                                        <div class="col-sm-4">
+                                                                            <div class="input-group">                         
+                                                                                <input type="text" name="seal_number[]" class="form-control" value="<?php echo $tmp; ?>" > 
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-4">
+                                                                            <button class="btn btn-danger delete_label" type="button" data-del_counter="<?php echo $i;?>" onclick="deleteLabel(<?php echo $i;?>);" > 
+                                                                                <i class="la la-remove"></i> Delete
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                <?php    
+                                                                $i++;
+                                                                endforeach;
+                                                                ?>
+                                                            </div>    
+                                                            <br>
+                                                            <div class="form-group row">
+                                                                <div class="col-sm-4"></div>
+                                                                <div class="col-sm-4">
+                                                                    <button class="btn btn-primary" type="button" id="add_more_seal_no" data-counter="<?php echo $tot_count;?>" onclick="manageCounter();" > <i class="la la-plus"></i> Add More Seal Number</button>
+                                                                </div>
+                                                                <div class="col-sm-4"></div> 
+                                                            </div>
+        
+                                                            
                                                             <div class="form-group row">
                                                                 <div class="col-sm-6">
                                                                     <button class="btn btn-success right" type="button" onclick="return savennew(0);">Save</button>
@@ -105,10 +158,26 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                 function chkrequired() {
                     
                     var chk = new Array();                    
-                    chk['t:seal_number'] = "Seal Number.";
+                    chk['s:country_id'] = " country";
                     
                     if (check(chk, 1))
                         document.mainform.submit();
+                    
+                }
+                function manageCounter(){
+                    
+                    var fcounter = parseInt( $('#add_more_seal_no').attr('data-counter') );
+                    var counter = fcounter + 1;
+                    $('#add_more_seal_no').attr('data-counter', counter);
+                    
+                    var node = '<div class="form-group row" id="seal_number_div_'+counter+'" ><label class="col-sm-2 form-control-label">Label '+counter+' </label><div class="col-sm-4"><div class="input-group"><input type="text" name="seal_number[]" id="seal_number_'+counter+'" class="form-control"></div></div><div class="col-sm-4"><button class="btn btn-danger" type="button" data-del_counter="'+counter+'" onclick="deleteLabel('+counter+');" ><i class="la la-remove"></i>Delete</button></div></div>';   
+                    $("#label_top_div .row").last().after(node);
+                    
+                }
+                function deleteLabel(counter){
+                    
+                    var tmp = '#seal_number_div_'+counter;
+                    $(tmp).remove();
                     
                 }
             </script>
@@ -125,13 +194,15 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
 if (isset($_POST['addnew'])) {
     
      if ($_REQUEST['id']) {
-         
-        $arr = array( "seal_number"=>$_POST['seal_number'] );            
+       
+        $seal_number = implode(',', $_POST['seal_number']);        
+        $arr = array( "country_id"=>$_POST['country_id'], "seal_number"=>$seal_number );            
         $update = updateqry( $arr, array("id=" => $_REQUEST['id']), $table );        
         
     } else {
         
-        $arr = array( "seal_number"=>$_POST['seal_number'], "created_at"=>date('Y-m-d h:i:s') );  
+        $seal_number = implode(',', $_POST['seal_number']);
+        $arr = array( "country_id"=>$_POST['country_id'], "seal_number"=>$seal_number, "created_at"=>date('Y-m-d h:i:s') );  
         $insert = insertqry($arr, $table);
         $insertedid = getfieldmaxvalue('id', $table); 
         

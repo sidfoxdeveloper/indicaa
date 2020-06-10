@@ -14,11 +14,17 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
         
         $pagetype = "Edit";
         $data = fetchqry("*", $table, array("id=" => $_REQUEST['id']));
+        $country_id = $data['country_id'];
         $name = $data['name'];
+        $status = $data['status'];
         $created_at = date( 'd F, Y', strtotime($data['created_at']) );        
         
     } else {        
-        $name = $_REQUEST['name'];        
+        
+        $country_id = $_REQUEST['country_id'];
+        $name = $_REQUEST['name'];
+        $status = $_REQUEST['status'];
+        
     }
     if (strpos($_SERVER['REQUEST_URI'], "?true") != 0) {
         
@@ -69,6 +75,39 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                                                                 <div class="col-sm-10">
                                                                     <div class="input-group">                         
                                                                         <input type="text" name="name" id="name" class="form-control" value="<?php echo $name; ?>" > 
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="country_id" class="col-sm-2 form-control-label">Select The Country</label>
+                                                                <div class="col-sm-10">
+                                                                    <div class="input-group">
+                                                                        <select name="country_id" id="country_id" class="form-control">
+                                                                            <option value="">Country</option>
+                                                                            <?php
+                                                                            $sel_contries = selectqry('*', TB_COUNTRIES);
+                                                                            $selected = "";
+                                                                            while ($rowc = mysqli_fetch_assoc($sel_contries)):
+                                                                                if( $rowc['id'] == $country_id ):
+                                                                                    echo '<option value="'.$rowc['id'].'" selected >'.$rowc['name'].'</option>';
+                                                                                else:
+                                                                                    echo '<option value="'.$rowc['id'].'">'.$rowc['name'].'</option>';
+                                                                                endif;
+                                                                            endwhile;
+                                                                            ?>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="status" class="col-sm-2 form-control-label">Status</label>
+                                                                <div class="col-sm-10">
+                                                                    <div class="input-group">                         
+                                                                        <select name="status" id="status" class="form-control">
+                                                                            <option>Select Status</option>
+                                                                            <option <?php if($status == 'verified'){ echo 'selected'; } ?> value="verified">Verified</option>
+                                                                            <option <?php if($status == 'unverified'){ echo 'selected'; } ?> value="unverified">Unverified</option>
+                                                                        </select>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -123,12 +162,12 @@ if (isset($_POST['addnew'])) {
     
      if ($_REQUEST['id']) {
          
-        $arr = array( "name"=>$_POST['name'] );            
+        $arr = array( "country_id"=>$_POST['country_id'], "name"=>$_POST['name'], "status"=>$_POST['status'] );            
         $update = updateqry( $arr, array("id=" => $_REQUEST['id']), $table );
         
     } else {
         
-        $arr = array( "name"=>$_POST['name'], "created_at"=>$created_at );  
+        $arr = array( "country_id"=>$_POST['country_id'], "name"=>$_POST['name'], "status"=>$_POST['status'], "created_at"=>$created_at );  
         $insert = insertqry($arr, $table);
         $insertedid = getfieldmaxvalue('id', $table); 
         

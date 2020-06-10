@@ -13,16 +13,16 @@ if ($permission['view']) { ?>
     if ($delete['id']) {      
     }
 
-    $Limit = 50;
-    $qry = "select a.* from " . $table . " a where 1 ";
+    $Limit = DEFAULT_LIMIT;
+    $qry = "select c.* from " . $table . " c where 1 ";
     if ($swords) {
         $qry .= "and 1 ";
         $paginationback .= "&s=" . $swords;
     }
     /** For Group By **/
-    $qry .= "group by a.id ";
+    $qry .= "group by c.id ";
     /** For Ordering **/
-    $qry .= " order by a.id DESC ";
+    $qry .= " order by c.id DESC ";
 
     $page = $_REQUEST['page'];
     $sel = mysqli_query($con, $qry);
@@ -55,7 +55,12 @@ if ($permission['view']) { ?>
                     <div class="ks-page-content">
                         <div class="ks-page-content-body">
                             <div class="ks-dashboard-tabbed-sidebar">
-                                <div class="ks-dashboard-tabbed-sidebar-widgets">                 
+                                <div class="ks-dashboard-tabbed-sidebar-widgets"> 
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <a href="<?php echo URL_BASEADMIN . $editpagename; ?>" class="btn btn-success btn-sm float-right" title="Add">Add</a>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="card ks-card-widget ks-widget-table">
@@ -63,9 +68,13 @@ if ($permission['view']) { ?>
                                                     <table class="table ks-payment-table-invoicing">
                                                         <tbody>
                                                             <tr>
-                                                                <th width="1">#</th>
-                                                                <th>Name</th>
-                                                                <th>Registered At</th>  
+                                                                <th>DATE</th>
+                                                                <th>COUNTRY</th>
+                                                                <th>CURRENCY</th>
+                                                                <th>BRANCH</th>
+                                                                <th>COMPANY</th>
+                                                                <th>SHIPPING LINE</th>
+                                                                <th>STATUS</th>
                                                                 <th width="5%">Action</th>
                                                             </tr>
                                                             <?php
@@ -74,9 +83,42 @@ if ($permission['view']) { ?>
                                                                 $i = 1;
                                                                 while ($row = mysqli_fetch_array($sel)) { ?>
                                                                     <tr>
-                                                                        <td><?php echo $i; ?></td>
+                                                                        <td><?php echo date( 'd/m/Y', strtotime($row['created_at']) ); ?></td>
                                                                         <td><?php echo $row['name']; ?></td>
-                                                                        <td><?php echo date( 'd F, Y', strtotime($row['created_at']) ); ?></td>
+                                                                        <td>
+                                                                            <?php 
+                                                                            $crow = fetchqry( '*', TB_CURRENCY, array('id='=>$row['currency_id']) );
+                                                                            echo $crow['name'].'<br>'.$crow['currency_code'];
+                                                                            ?>
+                                                                        </td>
+                                                                        <td>
+                                                                            <?php 
+                                                                            $crow = fetchqry( '*', TB_BRANCH_CODE, array('id='=>$row['branch_code_id']) );
+                                                                            echo $crow['name'].'<br>'.$crow['branch_code'];
+                                                                            ?>
+                                                                        </td>
+                                                                        <td>
+                                                                            <?php 
+                                                                            $crow = fetchqry( '*', TB_COMPANIES, array('id='=>$row['company_id']) );
+                                                                            echo $crow['name'].'<br>'.$crow['company_code'];
+                                                                            ?>
+                                                                        </td>
+                                                                        <td>
+                                                                            <?php 
+                                                                            $crow = fetchqry( '*', TB_SHIPPING_LINE, array('id='=>$row['shipping_line_id']) );
+                                                                            echo $crow['name'].'<br>'.$crow['shipping_line_code'];
+                                                                            ?>
+                                                                        </td>
+                                                                        <td>
+                                                                        <?php 
+                                                                            $status = $row['status'];
+                                                                            if($status == 'unverified'):
+                                                                                echo '<button class="btn btn-danger btn-sm col-sm-12" >Not verified</button>';
+                                                                            elseif($status == 'verified'):        
+                                                                                echo '<button class="btn btn-success btn-sm col-sm-12" >Verified</button>';
+                                                                            endif;
+                                                                        ?>
+                                                                        </td>
                                                                         <td class="text-center">
                                                                             <?php if ($permission['edit']) { ?><a href="<?php echo URL_BASEADMIN . $editpagename . $paginationback . '&id=' . $row['id'] . '&page=' . $page; ?>" class="btn btn-primary btn-sm" title="Edit">Edit</a><?php } ?>
                                                                             <?php if($permission['del']) { ?><a class="btn btn-danger btn-sm" href="javascript:" onclick="return deletesure('<?php echo $row['id'];?>', '<?php echo $table; ?>', '');">Delete</a><?php } ?>

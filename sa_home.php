@@ -1,4 +1,21 @@
-<?php include('includes/script_top.php'); ?>
+<?php 
+    include('includes/script_top.php'); 
+    
+    $inspectors = $country_manager = $emo_admin = $super_admin = $global_volume = 0;
+    
+    $tmp = selectqry( 'id', TB_USERS, array('users_groups_id='=>'6') );
+    $inspectors = mysqli_num_rows($tmp);
+    
+    $tmp = selectqry( 'id', TB_USERS, array('users_groups_id='=>'5') );
+    $country_manager = mysqli_num_rows($tmp);
+    
+    $tmp = selectqry( 'id', TB_USERS, array('users_groups_id='=>'4') );
+    $emo_admin = mysqli_num_rows($tmp);
+    
+    $tmp = selectqry( 'id', TB_USERS, array('users_groups_id='=>'2') );
+    $manager = mysqli_num_rows($tmp);
+    
+?>
 <!DOCTYPE html>
 <html lang="en">
     <!-- BEGIN HEAD -->
@@ -33,6 +50,24 @@
                         <div class="ks-dashboard-tabbed-sidebar">
                             <!-- START: ks-dashboard-tabbed -->    
                             <div class="ks-dashboard-tabbed-sidebar-widgets">
+                                
+                                <div class="row">
+                                    <div class="col-md-4 col-xs-12">
+                                        <div class="box-div">
+                                            <h4>USERS</h4>
+                                            <h6>INSPECTOR &nbsp;-&nbsp; <?php echo $inspectors;?></h6>
+                                            <h6>COUNTRY MANAGERS &nbsp;-&nbsp; <?php echo $country_manager;?></h6>
+                                            <h6>EMO ADMIN &nbsp;-&nbsp; <?php echo $emo_admin;?></h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-xs-12">                                                            
+                                        <div class="box-div">
+                                            <h4>GLOBAL VOLUME(Past 30 days)</h4>
+                                            <h6><?php echo $global_volume;?> TN</h6>
+                                        </div>
+                                    </div>
+
+                                </div>
                                 
                                 <?php /* ?>
                                 <div class="row">

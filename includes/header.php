@@ -45,10 +45,12 @@
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="Preview">
+                        <?php /* ?>
                         <a class="dropdown-item" href="<?php echo URL_BASEADMIN.ACCOUNT_SETTIINGS; ?>">
                             <span class="la la-user ks-icon"></span>
                             <span>Profile</span>
                         </a>
+                        <?php */ ?>
                         <a class="dropdown-item" href="<?php echo URL_BASEADMIN.LOGOUT_PAGE; ?>">
                             <span class="la la-sign-out ks-icon" aria-hidden="true"></span>
                             <span>Logout</span>

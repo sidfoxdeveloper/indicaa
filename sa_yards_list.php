@@ -1,9 +1,9 @@
 <?php
+
 include('includes/script_top.php');
-?>
-<?php
-if ($permission['view']) { ?>
-    <?php
+
+if ($permission['view']) { 
+    
     $pagename = "Yards";
     $listpagename = SA_YARDS_LIST;
     $editpagename = SA_YARDS_EDIT;
@@ -55,7 +55,12 @@ if ($permission['view']) { ?>
                     <div class="ks-page-content">
                         <div class="ks-page-content-body">
                             <div class="ks-dashboard-tabbed-sidebar">
-                                <div class="ks-dashboard-tabbed-sidebar-widgets">                 
+                                <div class="ks-dashboard-tabbed-sidebar-widgets">    
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <a href="<?php echo URL_BASEADMIN . $editpagename; ?>" class="btn btn-success btn-sm float-right" title="Add">Add</a>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="card ks-card-widget ks-widget-table">
@@ -63,9 +68,10 @@ if ($permission['view']) { ?>
                                                     <table class="table ks-payment-table-invoicing">
                                                         <tbody>
                                                             <tr>
-                                                                <th width="1">#</th>
-                                                                <th>Name</th>
-                                                                <th>Registered At</th>  
+                                                                <th>DATE</th>
+                                                                <th>YARD NAME</th>
+                                                                <th>STATUS</th>
+                                                                <th>COUNTRY NAME</th>  
                                                                 <th width="5%">Action</th>
                                                             </tr>
                                                             <?php
@@ -74,9 +80,24 @@ if ($permission['view']) { ?>
                                                                 $i = 1;
                                                                 while ($row = mysqli_fetch_array($sel)) { ?>
                                                                     <tr>
-                                                                        <td><?php echo $i; ?></td>
+                                                                        <td><?php  echo date('d/m/Y', strtotime($row['created_at'])); ?></td>
                                                                         <td><?php echo $row['name']; ?></td>
-                                                                        <td><?php echo date( 'd F, Y', strtotime($row['created_at']) ); ?></td>
+                                                                        <td>
+                                                                            <?php 
+                                                                            $status = $row['status'];
+                                                                            if($status == 'unverified'):
+                                                                                echo '<button class="btn btn-danger btn-sm col-sm-12" >Not verified</button>';
+                                                                            elseif($status == 'verified'):        
+                                                                                echo '<button class="btn btn-success btn-sm col-sm-12" >Verified</button>';
+                                                                            endif;
+                                                                            ?>
+                                                                        </td>
+                                                                        <td>
+                                                                            <?php 
+                                                                            $country = fetchqry( 'name', TB_COUNTRIES, array('id='=>$row['country_id']) );
+                                                                            echo $country['name'];
+                                                                            ?>
+                                                                        </td>
                                                                         <td class="text-center">
                                                                             <?php if ($permission['edit']) { ?><a href="<?php echo URL_BASEADMIN . $editpagename . $paginationback . '&id=' . $row['id'] . '&page=' . $page; ?>" class="btn btn-primary btn-sm" title="Edit">Edit</a><?php } ?>
                                                                             <?php if($permission['del']) { ?><a class="btn btn-danger btn-sm" href="javascript:" onclick="return deletesure('<?php echo $row['id'];?>', '<?php echo $table; ?>', '');">Delete</a><?php } ?>

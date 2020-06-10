@@ -1,10 +1,8 @@
 <?php
 include('includes/script_top.php');
-?>
-<?php
+
 if ($permission['view']) {
-    ?>
-    <?php
+    
     $pagename = "User";
     $listpagename = SA_USER_LIST;
     $editpagename = SA_USER_EDIT;
@@ -39,6 +37,7 @@ if ($permission['view']) {
     $NumberOfPages = ceil($NumberOfResults / $Limit);
     $sel = mysqli_query($con, $qry . " LIMIT " . ($page - 1) * $Limit . ",$Limit");
     $display = mysqli_num_rows($sel);
+    
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -65,16 +64,19 @@ if ($permission['view']) {
                                 <div class="ks-dashboard-tabbed-sidebar-widgets">                 
                                     <div class="row">
                                         <div class="col-lg-12">
+                                            <a href="<?php echo URL_BASEADMIN . $editpagename; ?>" class="btn btn-success btn-sm float-right" title="Add">Add</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
                                             <div class="card ks-card-widget ks-widget-table">
                                                 <div class="card-block">
                                                     <table class="table ks-payment-table-invoicing">
                                                         <tbody>
                                                             <tr>
-                                                                <th width="1">#</th>
-                                                                <th>Username</th>
-                                                                <th>Email</th>
-                                                                <th>Status</th>
-                                                                <th>Registered At</th>  
+                                                                <th>DATE</th>
+                                                                <th>USER NAME</th>
+                                                                <th>USER LEVEL</th>
                                                                 <th width="5%">Action</th>
                                                             </tr>
                                                             <?php
@@ -83,11 +85,9 @@ if ($permission['view']) {
                                                                 while ($row = mysqli_fetch_array($sel)) {
                                                                     ?>
                                                                     <tr>
-                                                                        <td><?php echo $i + 1; ?></td>
+                                                                        <td><?php echo date( 'Y/m/d', strtotime($row['created_at']) ); ?></td>
                                                                         <td><?php echo $row['first_name'].' '.$row['last_name']; ?></td>
-                                                                        <td><?php echo $row['email']; ?></td>
                                                                         <td><?php echo $row['status']; ?></td>
-                                                                        <td><?php echo date( 'd F, Y', strtotime($row['created_at']) ); ?></td>
                                                                         <td class="text-center">
                                                                             <?php if($permission['edit']) { ?><a href="<?php echo URL_BASEADMIN . $editpagename . $paginationback . '&id=' . $row['id'] . '&page=' . $page; ?>" class="btn btn-primary btn-sm" title="Edit" >Edit</a><?php } ?>   
                                                                             <?php if($permission['del']) { ?><a class="btn btn-danger btn-sm" href="javascript:" onclick="return deletesure('<?php echo $row['id'];?>', '<?php echo $table; ?>', '');">Delete</a><?php } ?>

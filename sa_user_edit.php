@@ -14,6 +14,9 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
         $pagetype = "Edit";
         $data = fetchqry("*", $table, array("id=" => $_REQUEST['id']));
         $users_groups_id = $data['users_groups_id'];
+        $country_id = $data['country_id'];
+        $company_id = $data['company_id'];
+        $yard_id = $data['yard_id'];
         $user_name = $data['user_name'];
         $first_name = $data['first_name'];
         $last_name = $data['last_name'];
@@ -22,18 +25,26 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
         $status = $data['status'];
         $image = $data['image'];
         $location = $data['location'];
+        $start_date = $data['start_date'];
+        $end_date = $data['end_date'];
         $created_at = date( 'd F, Y', strtotime($data['created_at']) );        
         
     } else {
         
-        $users_groups_id = $_REQUEST['users_groups_id'];
-        $user_name = $_REQUEST['user_name'];
-        $first_name = $_REQUEST['first_name'];
-        $last_name = $_REQUEST['last_name'];
-        $email = $_REQUEST['email'];
-        $phone = $_REQUEST['phone'];
-        $status = $_REQUEST['status'];
-        $location = $_REQUEST['location'];
+        $users_groups_id = $_POST['users_groups_id'];
+        $country_id = $_POST['country_id'];
+        $company_id = $_POST['company_id'];
+        $yard_id = $_POST['yard_id'];
+        $user_name = $_POST['user_name'];
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $email = $_POST['email'];
+        $phone = $_POST['phone'];
+        $status = $_POST['status'];
+        $image = $_POST['image'];
+        $location = $_POST['location'];
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
         
     }
     
@@ -61,6 +72,20 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                     width: 25%;
                 }
             </style>
+            
+            <link rel="stylesheet" type="text/css" href="<?php echo URL_BASEADMIN; ?>libs/prism/prism.css"> <!-- original -->
+            
+            <link rel="stylesheet" type="text/css" href="<?php echo URL_BASEADMIN; ?>libs/flatpickr/flatpickr.min.css"> <!-- original -->
+            <link rel="stylesheet" type="text/css" href="<?php echo URL_BASEADMIN; ?>assets/styles/libs/flatpickr/flatpickr.min.css"> <!-- customization -->
+            
+            <!--  jQuery -->
+            <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+            <!-- Isolated Version of Bootstrap, not needed if your site already uses Bootstrap -->
+            <link rel="stylesheet" href="https://formden.com/static/cdn/bootstrap-iso.css" />
+            <!-- Bootstrap Date-Picker Plugin -->
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>  
+            
         </head>
         <body class="customer-add-page invoice-list-page ks-navbar-fixed ks-sidebar-default ks-sidebar-position-fixed ks-page-header-fixed ks-theme-primary ks-page-loading"> 
             <!-- remove ks-page-header-fixed to unfix header -->
@@ -111,9 +136,9 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                                                                     <div class="input-group">      
                                                                         <select name="status" id="status" class="form-control" onchange="limitOfDays();" >
                                                                             <option value="">- - - Select User Status - - -</option>                                                                          
-                                                                            <option value="permanent">Permanent</option>
-                                                                            <option value="limit_of_days">Limit For Days</option>
-                                                                            <option value="blocked">Blocked</option>
+                                                                            <option value="permanent" <?php if($status == 'permanent'){ echo 'selected'; } ?> >Permanent</option>
+                                                                            <option value="limit_of_days" <?php if($status == 'limit_of_days'){ echo 'selected'; } ?> >Limit For Days</option>
+                                                                            <option value="blocked" <?php if($status == 'blocked'){ echo 'selected'; } ?> >Blocked</option>
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -125,6 +150,80 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                                                                     <div class="input-group">                                                         
                                                                         <input type="number" name="app_access_days" id="app_access_days" class="form-control" value="<?php if($app_access_days > 0){ echo $app_access_days; } else { echo "0"; } ?>" /> 
                                                                     </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="form-group row">
+                                                                <label for="country_id" class="col-sm-2 form-control-label">Select Country</label>
+                                                                <div class="col-sm-10">
+                                                                    <div class="input-group">
+                                                                        <select name="country_id" id="country_id" class="form-control">
+                                                                            <option value="">Select The Country</option>
+                                                                            <?php
+                                                                            $sel_contries = selectqry('*', TB_COUNTRIES);
+                                                                            while ($crow = mysqli_fetch_assoc($sel_contries)):
+                                                                                $selected = "";
+                                                                                if( $crow['id'] == $country_id ):
+                                                                                    $selected = "selected";
+                                                                                endif;
+                                                                                echo '<option value="'.$crow['id'].'" '.$selected.' >'.$crow['name'].'</option>';
+                                                                            endwhile;
+                                                                            ?>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="company_id" class="col-sm-2 form-control-label">Select Company</label>
+                                                                <div class="col-sm-10">
+                                                                    <div class="input-group">
+                                                                        <select name="company_id" id="company_id" class="form-control">
+                                                                            <option value="">Select The Company</option>
+                                                                            <?php
+                                                                            $sel_companies = selectqry('*', TB_COMPANIES);
+                                                                            while ($crow = mysqli_fetch_assoc($sel_companies)):
+                                                                                $selected = "";
+                                                                                if( $crow['id'] == $company_id ):
+                                                                                    $selected = "selected";
+                                                                                endif;
+                                                                                echo '<option value="'.$crow['id'].'" '.$selected.' >'.$crow['name'].'</option>';
+                                                                            endwhile;
+                                                                            ?>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="yard_id" class="col-sm-2 form-control-label">Select Yard</label>
+                                                                <div class="col-sm-10">
+                                                                    <div class="input-group">
+                                                                        <select name="yard_id" id="yard_id" class="form-control">
+                                                                            <option value="">Select The Yard</option>
+                                                                            <?php
+                                                                            $sel_yards = selectqry('*', TB_YARDS);
+                                                                            while ($crow = mysqli_fetch_assoc($sel_yards)):
+                                                                                $selected = "";
+                                                                                if( $crow['id'] == $yard_id ):
+                                                                                    $selected = "selected";
+                                                                                endif;
+                                                                                echo '<option value="'.$crow['id'].'" '.$selected.' >'.$crow['name'].'</option>';
+                                                                            endwhile;
+                                                                            ?>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="form-group row">
+                                                                <label for="start_date" class="col-sm-2 form-control-label">Start Date</label>
+                                                                <div class="col-sm-4">
+                                                                    <input type="text" name="start_date" id="start_date" class="calendar form-control" placeholder="Enter Start Date" value="<?php echo date('Y-m-d', strtotime($start_date));?>"  > 
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group row">
+                                                                <label for="end_date" class="col-sm-2 form-control-label">End Date</label>
+                                                                <div class="col-sm-4">
+                                                                    <input type="text" name="end_date" id="end_date" class="calendar form-control" placeholder="Enter End Date" value="<?php echo date('Y-m-d', strtotime($end_date));?>" >
                                                                 </div>
                                                             </div>
                                                             
@@ -172,16 +271,16 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
-                                                            <div class="form-group row">
-                                                                <label for="password" class="col-sm-2 form-control-label">Password</label>
-                                                                <div class="col-sm-10">
-                                                                    <div class="input-group">                                                               
-                                                                        <input type="text" name="password" id="password" class="form-control" value="<?php echo $password; ?>" > 
+                                                            <?php if( isEmpty($_REQUEST['id']) ){ ?>
+                                                                <div class="form-group row">
+                                                                    <label for="password" class="col-sm-2 form-control-label">Password</label>
+                                                                    <div class="col-sm-10">
+                                                                        <div class="input-group">                                                               
+                                                                            <input type="text" name="password" id="password" class="form-control" value="<?php echo $password; ?>" > 
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            
+                                                            <?php } ?>
                                                             <div class="form-group row">
                                                                 <label for="location" class="col-sm-2 form-control-label">Location</label>
                                                                 <div class="col-sm-10">
@@ -249,6 +348,8 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
             </div>
             <?php include('includes/script_bottom.php'); ?>
             
+            <script src="<?php echo URL_BASEADMIN; ?>libs/flatpickr/flatpickr.min.js"></script>
+            <script src="<?php echo URL_BASEADMIN; ?>libs/prism/prism.js"></script>    
             <script>
                 $('#app_access_days_div').hide();
                 
@@ -270,11 +371,16 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                     chk['t:first_name'] = "First Name.";
                     chk['t:last_name'] = "Last Name.";
                     chk['t:phone'] = "Phone.";
-                    chk['t:password'] = "password.";                    
                     
                     if (check(chk, 1))
                         document.mainform.submit();
                 }
+                
+                //Date and Time Picker  
+                $(".calendar").flatpickr({ 
+                    dateFormat:"Y-m-d",
+                });
+                
                 //CKEDITOR.replace('location', {toolbar: 'Basic', height: 180});
                 $('#imagetrigger').click(function (e) {
                     $('#image').trigger('click');
@@ -282,6 +388,7 @@ if (($permission['add'] && !$_REQUEST['id']) || ($permission['edit'] && $_REQUES
                 $('#image').on('change', function () {
                     $('#imagefilename').html($(this).val());
                 });
+                
             </script>
             
         </body>
@@ -300,16 +407,23 @@ if (isset($_POST['addnew'])) {
         
         $arr = array(
             "users_groups_id"=>$_POST['users_groups_id'], 
+            "country_id"=>$_POST['country_id'],
+            "company_id"=>$_POST['company_id'],
+            "yard_id"=>$_POST['yard_id'],
+            "user_name"=>$_POST['user_name'],
             "first_name"=>$_POST['first_name'],
             "last_name"=>$_POST['last_name'],
+            "email"=>$_POST['email'],
             "phone"=>$_POST['phone'], 
             "location"=>replacequoteb($_POST['location']),
             "image"=>$image, 
             "status"=>$_POST['status'],
-            "app_access_days"=>$_POST['app_access_days']              
+            "app_access_days"=>$_POST['app_access_days'],
+            "start_date"=> date( 'Y-m-d', strtotime($_POST['start_date']) ),
+            "end_date"=> date( 'Y-m-d', strtotime($_POST['end_date']))            
         );    
         
-        $update = updateqry($arr, array("id=" => $_REQUEST['id']), $table);        
+        $update = updateqry($arr, array("id="=>$_REQUEST['id']), $table);        
         
     } else {
         
@@ -322,22 +436,9 @@ if (isset($_POST['addnew'])) {
                 die;
         else:
             
-            $arr = array(
-                "users_groups_id"=>$_POST['users_groups_id'], 
-                "user_name"=>$_POST['user_name'], 
-                "first_name"=>$_POST['first_name'],
-                "last_name"=>$_POST['last_name'],
-                "email"=>$_POST['email'], 
-                "password"=>encode($_POST['password']),
-                "phone"=>$_POST['phone'], 
-                "location"=>replacequoteb($_POST['location']),
-                "image"=>$image, 
-                "status"=>$_POST['status'],
-                "app_access_days"=>$_POST['app_access_days'],
-                "created_at"=>date('Y-m-d h:i:s')
-            );  
-        
-            $insert = insertqry($arr, $table);
+            $tmp = array("created_at"=>date('Y-m-d h:i:s'));
+            $carr = array_merge($arr, $tmp);        
+            $insert = insertqry($carr, $table);  
             $insertedid = getfieldmaxvalue('id', $table); 
                 
         endif;
